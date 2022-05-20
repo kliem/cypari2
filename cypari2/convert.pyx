@@ -457,8 +457,8 @@ cdef PyLong_FromINT(GEN g):
 # Conversion Python -> PARI
 ########################################################################
 
-cdef GEN PyLong_AS_GEN(x):
-    cdef const digit* D = (<PyLongObject*>x).ob_digit
+cdef GEN PyLong_AS_GEN(py_long x):
+    cdef const digit* D = x.ob_digit
 
     # Size of the input
     cdef size_t sizedigits
