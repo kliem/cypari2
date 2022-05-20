@@ -47,7 +47,7 @@ from cpython.version cimport PY_MAJOR_VERSION
 from cpython.object cimport Py_SIZE
 from cpython.int cimport PyInt_AS_LONG, PyInt_FromLong
 from cpython.longintrepr cimport (_PyLong_New,
-        digit, PyLong_SHIFT, PyLong_MASK)
+        digit, PyLong_SHIFT, PyLong_MASK, py_long)
 from libc.limits cimport LONG_MIN, LONG_MAX
 from libc.math cimport INFINITY
 
@@ -56,9 +56,6 @@ from .stack cimport new_gen, reset_avma
 from .string_utils cimport to_string, to_bytes
 
 cdef extern from *:
-    ctypedef struct PyLongObject:
-        digit* ob_digit
-
     Py_ssize_t* Py_SIZE_PTR "&Py_SIZE"(object)
 
 
@@ -419,16 +416,17 @@ cdef PyLong_FromINT(GEN g):
     cdef size_t sizebits = sizewords * BITS_IN_LONG
     cdef size_t sizedigits = (sizebits + PyLong_SHIFT - 1) // PyLong_SHIFT
 
-    # Actual correct computed size
-    cdef Py_ssize_t sizedigits_final = 0
-
-    x = _PyLong_New(sizedigits)
-    cdef digit* D = (<PyLongObject*>x).ob_digit
+    # We initialize x once we have computed the actual correct size.
+    cdef py_long x
+    cdef digit* D = NULL
 
     cdef digit d
     cdef ulong w
-    cdef size_t i, j, bit
-    for i in range(sizedigits):
+    cdef size_t i, i2, j, bit
+    for i2 in range(sizedigits):
+        # We reverse the loop. Note that i is unsigned.
+        i = sizedigits - i2 - 1
+
         # The least significant bit of digit number i of the output
         # integer is bit number "bit" of word "j".
         bit = i * PyLong_SHIFT
@@ -444,19 +442,16 @@ cdef PyLong_FromINT(GEN g):
             d += w << (BITS_IN_LONG - bit)
 
         d = d & PyLong_MASK
+
+        if D is NULL:
+            # Initialize x, if d is non-zero.
+            if d:
+                x = _PyLong_New(i+1)
+                D = x.ob_digit
+            else:
+                continue
+
         D[i] = d
-
-        # Keep track of last non-zero digit
-        if d:
-            sizedigits_final = i+1
-
-    # Set correct size (use a pointer to hack around Cython's
-    # non-support for lvalues).
-    cdef Py_ssize_t* sizeptr = Py_SIZE_PTR(x)
-    if signe(g) > 0:
-        sizeptr[0] = sizedigits_final
-    else:
-        sizeptr[0] = -sizedigits_final
 
     return x
 
