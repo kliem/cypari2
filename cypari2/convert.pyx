@@ -443,7 +443,7 @@ cdef PyLong_FromINT(GEN g):
         if D is NULL:
             # Initialize x, if d is non-zero.
             if d:
-                x = _PyLong_New(i+1)
+                x = _PyLong_New(signe(g)*(i+1))
                 D = x.ob_digit
             else:
                 continue
