@@ -46,7 +46,6 @@ from cysignals.signals cimport sig_on, sig_off, sig_error
 from cpython.version cimport PY_MAJOR_VERSION
 from cpython.object cimport Py_SIZE
 from cpython.int cimport PyInt_AS_LONG, PyInt_FromLong
-from cpython.long cimport PyLong_FromLong
 from cpython.longintrepr cimport (_PyLong_New,
         digit, PyLong_SHIFT, PyLong_MASK, py_long)
 from libc.limits cimport LONG_MIN, LONG_MAX
@@ -407,10 +406,6 @@ cdef GEN gtoi(GEN g0) except NULL:
 
 
 cdef PyLong_FromINT(GEN g):
-
-    if not signe(g):
-        return PyLong_FromLong(0)
-
     # Size of input in words, bits and Python digits. The size in
     # digits might be a small over-estimation, but that is not a
     # problem.
