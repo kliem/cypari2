@@ -55,9 +55,6 @@ from .paridecl cimport *
 from .stack cimport new_gen, reset_avma
 from .string_utils cimport to_string, to_bytes
 
-cdef extern from *:
-    Py_ssize_t* Py_SIZE_PTR "&Py_SIZE"(object)
-
 
 ########################################################################
 # Conversion PARI -> Python
