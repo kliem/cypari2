@@ -36,7 +36,7 @@ jobs:
         - name: Local build
           run: |
             pip install sphinx cython
-            pip install -e git://github.com/kliem/cysignals.git@discover_cypari_on_runtime#egg=cysignals
+            pip install git+http://github.com/kliem/cysignals.git@discover_cypari_on_runtime#egg=cysignals
             make build
             make install
             make check
