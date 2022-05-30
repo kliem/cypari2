@@ -1,3 +1,7 @@
 from .pari_instance import Pari
 from .handle_error import PariError
 from .gen import Gen
+from .threads import PariThreadPool
+from .custom_block import init_custom_block
+
+init_custom_block()
