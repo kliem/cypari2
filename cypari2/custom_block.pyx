@@ -1,3 +1,5 @@
+# distutils: libraries = gmp pari
+
 #*****************************************************************************
 #  Distributed under the terms of the GNU General Public License (GPL)
 #  as published by the Free Software Foundation; either version 2 of
@@ -5,7 +7,12 @@
 #                  http://www.gnu.org/licenses/
 #*****************************************************************************
 
-cdef int custom_signals_is_blocked():
+from cysignals.signals cimport add_custom_signals
+
+cdef extern from "pari/pari.h":
+    int     PARI_SIGINT_block, PARI_SIGINT_pending
+
+cdef int custom_signal_is_blocked():
     return PARI_SIGINT_block
 
 cdef void custom_signal_unblock():
@@ -13,3 +20,8 @@ cdef void custom_signal_unblock():
 
 cdef void custom_set_pending_signal(int sig):
     PARI_SIGINT_pending = sig
+
+def init_custom_block():
+    add_custom_signals(&custom_signal_is_blocked,
+                       &custom_signal_unblock,
+                       &custom_set_pending_signal)
