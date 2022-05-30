@@ -10,6 +10,6 @@
 cdef extern from "pari/pari.h":
     int     PARI_SIGINT_block, PARI_SIGINT_pending
 
-int custom_signals_is_blocked()
-void custom_signal_unblock()
-void custom_set_pending_signal(int)
+cdef int custom_signals_is_blocked()
+cdef void custom_signal_unblock()
+cdef void custom_set_pending_signal(int)

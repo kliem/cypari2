@@ -5,11 +5,11 @@
 #                  http://www.gnu.org/licenses/
 #*****************************************************************************
 
-int custom_signals_is_blocked():
+cdef int custom_signals_is_blocked():
     return PARI_SIGINT_block
 
-void custom_signal_unblock():
+cdef void custom_signal_unblock():
     PARI_SIGINT_block = 0
 
-void custom_set_pending_signal(int sig):
+cdef void custom_set_pending_signal(int sig):
     PARI_SIGINT_pending = sig
