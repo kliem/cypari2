@@ -31,7 +31,6 @@ jobs:
         - uses: actions/upload-artifact@v2
           with:
               name: ${{ env.PARI_VERSION }}
-              path: /usr
 
     build-cypari:
         runs-on: ${{ matrix.os }}
@@ -58,7 +57,9 @@ jobs:
           uses: actions/download-artifact@v2
           with:
               name: ${{ env.PARI_VERSION }}
-              path: /usr
+        - name: Install pari
+          run: |
+            (cd ${{ env.PARI_VERSION }} && sudo make install)
         - name: Local build
           run: |
             pip install sphinx cython cysignals
